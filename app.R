@@ -5,10 +5,8 @@ library(gridExtra)
 library(showtext)
 showtext_auto()
 
-frank <- data("input")
-
 ui <- fluidPage(
-  titlePanel('IVIVC'),
+  titlePanel('IVIVC level A using the Rivivc package'),
   
   sidebarLayout(
     sidebarPanel(
@@ -16,7 +14,11 @@ ui <- fluidPage(
       req(fileInput("PK_file", "Choose PK profile", accept = ".csv")),
       req(fileInput("invitro_file", "Choose in vitro profile", accept = ".csv"))),
     mainPanel(
-      plotOutput("plot")
+      plotOutput("plot"),
+      tabPanel('Introduction',
+               p("Enzyme kinetics is a huge field. For a much better description take a look at the", a("Wikipedia page",href="https://www.wikiwand.com/en/Enzyme_kinetics"), 
+                 ", or a nice commemorative article on the", a("classic 1913 manuscript by Michaelis and Menten.", href="http://onlinelibrary.wiley.com/doi/10.1111/febs.12598/pdf")))
+                 
     )
   )
 )
@@ -25,6 +27,12 @@ ui <- fluidPage(
 server <- function(input, output){
   
   output$plot <- renderPlot({
+    
+  validate(
+      need(input$IV_file != "", "No IV data has been uploaded."),
+      need(input$PK_file != "", "No PK data has been uploaded."),
+      need(input$invitro_file != "", "No in vitro data has been uploaded.")
+  )
   
   IV_dat <- read.csv(input$IV_file$datapath)
   PK_dat <- read.csv(input$PK_file$datapath)
@@ -34,29 +42,21 @@ server <- function(input, output){
   if (is.null(PK_dat)) {return(NULL)}
   if (is.null(invitro_dat)) {return(NULL)}
   
-
-  #debug
-  #IV_dat = read.csv('impulse.csv')
-  #PK_dat = read.csv('response.csv')
-  #invitro_dat = read.csv('input.csv')
-  
   #preparing data matrices
   input_mtx<-as.matrix(invitro_dat)
   impulse_mtx<-as.matrix(IV_dat)
   resp_mtx<-as.matrix(PK_dat)
   
   #setting accuracy
-  accur_explic<-20
-  accur_implic<-5
+  accur_explic <- 20
+  accur_implic <- 5
   
-  #run deconvolution
+  #run de-convolution
   result<-RivivcA(input_mtx,impulse_mtx,resp_mtx,explicit.interp=accur_explic,implicit.interp=accur_implic)
   
   predicted<-predict(result$regression)
   deconvolved_data<-unname(predicted)
   orig_data<-input_mtx[,2]
-  
-
   
   p1 = qplot(orig_data,result$numeric$par[,2], xlab='original data', ylab='fitted data', main='IVIVC correlation') +
     geom_line(aes(orig_data,deconvolved_data, col='red')) +
