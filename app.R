@@ -6,7 +6,7 @@ library(showtext)
 showtext_auto()
 
 ui <- fluidPage(
-  titlePanel('IVIVC level A using the Rivivc package'),
+  titlePanel('IVIVC level A'),
   
   sidebarLayout(
     sidebarPanel(
@@ -17,7 +17,7 @@ ui <- fluidPage(
     mainPanel(
       plotOutput("plot"),
       tabPanel('Introduction',
-               p("Example data from the Rivivc R package is available ", a("here (zip).",href="https://github.com/scheckley/shiny_ivivc/raw/master/example_data.zip"), 
+               p("This app uses the Rivivc R package. Example data from the package is available ", a("here (zip).",href="https://github.com/scheckley/shiny_ivivc/raw/master/example_data.zip"), 
                br(),
                p("Documentation for Rivivc is available ", a("here (pdf).", href="https://cran.r-project.org/web/packages/Rivivc/Rivivc.pdf"))))
                  
@@ -69,7 +69,7 @@ server <- function(input, output){
 
   grid.arrange(p1,p2, ncol=2)
   
-  # Downloadable csv of selected dataset ----
+  # Downloadable csv
   output$downloadData <- downloadHandler(
     filename = function() {
       paste(input$dataset, ".csv", sep = "")
