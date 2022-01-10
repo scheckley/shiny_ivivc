@@ -16,8 +16,9 @@ ui <- fluidPage(
     mainPanel(
       plotOutput("plot"),
       tabPanel('Introduction',
-               p("Enzyme kinetics is a huge field. For a much better description take a look at the", a("Wikipedia page",href="https://www.wikiwand.com/en/Enzyme_kinetics"), 
-                 ", or a nice commemorative article on the", a("classic 1913 manuscript by Michaelis and Menten.", href="http://onlinelibrary.wiley.com/doi/10.1111/febs.12598/pdf")))
+               p("Example data from the Rivivc R package is available ", a("here (zip).",href="https://github.com/scheckley/shiny_ivivc/blob/master/example_data.zip"), 
+               br(),
+               p("Documentation for Rivivc is available ", a("here (pdf).", href="https://cran.r-project.org/web/packages/Rivivc/Rivivc.pdf"))))
                  
     )
   )
