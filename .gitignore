@@ -2,3 +2,4 @@ rsconnect
 .RData
 .git
 .Rhistory
+*.csv
