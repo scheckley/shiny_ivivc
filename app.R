@@ -12,7 +12,8 @@ ui <- fluidPage(
     sidebarPanel(
       req(fileInput("IV_file", "Choose IV profile", accept = ".csv")),
       req(fileInput("PK_file", "Choose PK profile", accept = ".csv")),
-      req(fileInput("invitro_file", "Choose in vitro profile", accept = ".csv"))),
+      req(fileInput("invitro_file", "Choose in vitro profile", accept = ".csv")),
+      downloadButton("downloadData", "Download Results")),
     mainPanel(
       plotOutput("plot"),
       tabPanel('Introduction',
@@ -59,14 +60,25 @@ server <- function(input, output){
   deconvolved_data<-unname(predicted)
   orig_data<-input_mtx[,2]
   
-  p1 = qplot(orig_data,result$numeric$par[,2], xlab='original data', ylab='fitted data', main='IVIVC correlation') +
+  p1 = qplot(orig_data,result$numeric$par[,2], xlab='in vitro data', ylab='deconvolved data', main='IVIVC correlation') +
     geom_line(aes(orig_data,deconvolved_data, col='red')) +
     guides(color = FALSE)
   
-  p2 = qplot(input_mtx[,1], input_mtx[,2], xlab='time', ylab='fraction absorbed', main='deconvolution plot (red = computed deconvolution profile)') + 
+  p2 = qplot(input_mtx[,1], input_mtx[,2], xlab='time', ylab='fraction absorbed', main='deconvolution (points = data, red = computed deconvolution profile)') + 
     geom_line(aes(result$numeric$par[,1], result$numeric$par[,2]), col='red')
 
   grid.arrange(p1,p2, ncol=2)
+  
+  # Downloadable csv of selected dataset ----
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      paste(input$dataset, ".csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(result$numeric$par, file, row.names = FALSE)
+    }
+  )
+  
   }
   )
   
