@@ -19,6 +19,7 @@ ui <- fluidPage(
     mainPanel(
       plotOutput("plot"),
       tabPanel('Introduction',
+               br(),
                p("This app uses the Rivivc R package. Example data from the package is available ", a("here (zip).",href="https://github.com/scheckley/shiny_ivivc/raw/master/example_data.zip"), 
                br(),
                p("Documentation for Rivivc is available ", a("here (pdf).", href="https://cran.r-project.org/web/packages/Rivivc/Rivivc.pdf"))))
