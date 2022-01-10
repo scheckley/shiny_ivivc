@@ -12,9 +12,9 @@ ui <- fluidPage(
   
   sidebarLayout(
     sidebarPanel(
-      fileInput("file1", "Choose impulse CSV File", accept = ".csv"),
-      fileInput("file2", "Choose response File", accept = ".csv"),
-      fileInput("file3", "Choose input File", accept = ".csv")),
+      req(fileInput("IV_file", "Choose IV profile", accept = ".csv")),
+      req(fileInput("PK_file", "Choose PK profile", accept = ".csv")),
+      req(fileInput("invitro_file", "Choose in vitro profile", accept = ".csv"))),
     mainPanel(
       plotOutput("plot")
     )
@@ -26,30 +26,46 @@ server <- function(input, output){
   
   output$plot <- renderPlot({
   
-  IV_dat = input$file1
-  PK_dat = input$file2
-  invitro_dat = input$file3
-  
-  if is.na(IV_dat) {}
+  IV_dat <- read.csv(input$IV_file$datapath)
+  PK_dat <- read.csv(input$PK_file$datapath)
+  invitro_dat <- read.csv(input$invitro_file$datapath)
 
+  if (is.null(IV_dat)) {return(NULL)}
+  if (is.null(PK_dat)) {return(NULL)}
+  if (is.null(invitro_dat)) {return(NULL)}
+  
+
+  #debug
+  #IV_dat = read.csv('impulse.csv')
+  #PK_dat = read.csv('response.csv')
+  #invitro_dat = read.csv('input.csv')
   
   #preparing data matrices
-  input_mtx<-as.matrix(IV_dat)
-  impulse_mtx<-as.matrix(PK_dat)
-  resp_mtx<-as.matrix(invitro_dat)
+  input_mtx<-as.matrix(invitro_dat)
+  impulse_mtx<-as.matrix(IV_dat)
+  resp_mtx<-as.matrix(PK_dat)
+  
   #setting accuracy
-  accur_explic <- 20
-  accur_implic <- 5
+  accur_explic<-20
+  accur_implic<-5
+  
   #run deconvolution
   result<-RivivcA(input_mtx,impulse_mtx,resp_mtx,explicit.interp=accur_explic,implicit.interp=accur_implic)
-  summary(result$regression)
-  print("Raw results of deconvolution")
-  print(result$numeric$par)
+  
   predicted<-predict(result$regression)
   deconvolved_data<-unname(predicted)
-  orig_data<-input_mtx[, 2]
+  orig_data<-input_mtx[,2]
   
-  p1 <- plot(orig_data,result$numeric$par[,2])
+
+  
+  p1 = qplot(orig_data,result$numeric$par[,2], xlab='original data', ylab='fitted data', main='IVIVC correlation') +
+    geom_line(aes(orig_data,deconvolved_data, col='red')) +
+    guides(color = FALSE)
+  
+  p2 = qplot(input_mtx[,1], input_mtx[,2], xlab='time', ylab='fraction absorbed', main='deconvolution plot (red = computed deconvolution profile)') + 
+    geom_line(aes(result$numeric$par[,1], result$numeric$par[,2]), col='red')
+
+  grid.arrange(p1,p2, ncol=2)
   }
   )
   
