@@ -16,7 +16,7 @@ ui <- fluidPage(
     mainPanel(
       plotOutput("plot"),
       tabPanel('Introduction',
-               p("Example data from the Rivivc R package is available ", a("here (zip).",href="https://github.com/scheckley/shiny_ivivc/blob/master/example_data.zip"), 
+               p("Example data from the Rivivc R package is available ", a("here (zip).",href="https://github.com/scheckley/shiny_ivivc/raw/master/example_data.zip"), 
                br(),
                p("Documentation for Rivivc is available ", a("here (pdf).", href="https://cran.r-project.org/web/packages/Rivivc/Rivivc.pdf"))))
                  
