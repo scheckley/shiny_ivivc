@@ -13,8 +13,8 @@ ui <- fluidPage(
       req(fileInput("IV_file", "Choose IV profile", accept = ".csv")),
       req(fileInput("PK_file", "Choose PK profile", accept = ".csv")),
       req(fileInput("invitro_file", "Choose in vitro profile", accept = ".csv")),
-      numericInput("accur_explic", "explicit accuracy", 20, min = 1, max = 50, step = 1),
-      numericInput("accur_implic", "implicit accuracy", 5, min = 1, max = 20, step = 1),
+      numericInput("accur_explic", "explicit accuracy (default = 20)", 20, min = 1, max = 50, step = 1),
+      numericInput("accur_implic", "implicit accuracy (default = 5)", 5, min = 1, max = 20, step = 1),
       downloadButton("downloadData", "Download Results")),
     mainPanel(
       plotOutput("plot"),
