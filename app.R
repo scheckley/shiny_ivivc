@@ -13,6 +13,8 @@ ui <- fluidPage(
       req(fileInput("IV_file", "Choose IV profile", accept = ".csv")),
       req(fileInput("PK_file", "Choose PK profile", accept = ".csv")),
       req(fileInput("invitro_file", "Choose in vitro profile", accept = ".csv")),
+      numericInput("accur_explic", "explicit accuracy", 20, min = 1, max = 50, step = 1),
+      numericInput("accur_implic", "implicit accuracy", 5, min = 1, max = 20, step = 1),
       downloadButton("downloadData", "Download Results")),
     mainPanel(
       plotOutput("plot"),
@@ -50,8 +52,8 @@ server <- function(input, output){
   resp_mtx<-as.matrix(PK_dat)
   
   #setting accuracy
-  accur_explic <- 20
-  accur_implic <- 5
+  accur_explic <- input$accur_explic
+  accur_implic <- input$accur_implic
   
   #run de-convolution
   result<-RivivcA(input_mtx,impulse_mtx,resp_mtx,explicit.interp=accur_explic,implicit.interp=accur_implic)
